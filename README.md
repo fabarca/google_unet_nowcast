@@ -1,6 +1,6 @@
 # U-Net for Precipitation Nowcasting
 
-**U-Net architecture inspired by "Machine Learning for Precipitation Nowcasting from Radar Images".**
+**U-Net architecture inspired by "Machine Learning for Precipitation Nowcasting from Radar Images", implemented in Keras (Tensorflow).**
 
 Google blog article: https://ai.googleblog.com/2020/01/using-machine-learning-to-nowcast.html
 
