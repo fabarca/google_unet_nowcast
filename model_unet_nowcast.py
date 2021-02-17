@@ -2,19 +2,19 @@ import tensorflow as tf
 from tensorflow.keras import layers
 from tensorflow.keras import models
 
-
 # U-Net architecture inspired by "Machine Learning for Precipitation Nowcasting from Radar Images".
 # https://ai.googleblog.com/2020/01/using-machine-learning-to-nowcast.html
 # https://arxiv.org/abs/1912.12132
 
 
 def basic_block(input_layer, n_channels):
+    residual = layers.Conv2D(n_channels, 1, padding="same")(input_layer)  # short_skip
+
     out_layer = layers.Conv2D(n_channels, 3, padding="same")(input_layer)
     out_layer = layers.BatchNormalization()(out_layer)
     out_layer = layers.LeakyReLU(alpha=0.1)(out_layer)
     out_layer = layers.Conv2D(n_channels, 3, padding="same")(out_layer)
 
-    residual = layers.Conv2D(n_channels, 1, padding="same")(input_layer)  # short_skip
     out_layer = layers.add([out_layer, residual])  # Add back residual
 
     return out_layer
@@ -25,7 +25,7 @@ def down_block(input_layer, n_channels):
 
     out_layer = layers.BatchNormalization()(input_layer)
     out_layer = layers.LeakyReLU(alpha=0.1)(out_layer)
-    out_layer = layers.MaxPooling2D(3, strides=2, padding="same")(out_layer)
+    out_layer = layers.MaxPooling2D(2, strides=2, padding="same")(out_layer)
 
     out_layer = layers.BatchNormalization()(out_layer)
     out_layer = layers.LeakyReLU(alpha=0.1)(out_layer)
@@ -91,6 +91,7 @@ def get_model(height, width, channels, out_channels, is_classification=True):
 # Free up RAM in case the model definition cells were run multiple times
 tf.keras.backend.clear_session()
 
-# Build model
-model = get_model(256, 256, 16, 4, is_classification=True)
+# Build model example: 
+#          6 radar images 256x256 -> predicts 4 classes of precipitation
+model = get_model(256, 256, 6, 4, is_classification=True)
 model.summary(line_length=120)
